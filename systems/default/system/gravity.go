@@ -18,20 +18,22 @@ type masser interface {
 }
 
 type gravitySystem struct {
-	order
+	order     int
 	direction Vector2
 	gs        []gravity
 	ms        []masser
 }
 
 func GravitySystem() *gravitySystem {
-	return &gravitySystem{
-		order: order{},
-	}
+	return &gravitySystem{}
+}
+
+func (s *gravitySystem) Order() int {
+	return s.order
 }
 
 func (s *gravitySystem) SetOrder(n int) *gravitySystem {
-	s.setOrder(n)
+	s.order = n
 	return s
 }
 

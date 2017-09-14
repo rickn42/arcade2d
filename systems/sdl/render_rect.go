@@ -1,4 +1,4 @@
-package entity
+package sdl
 
 import (
 	"fmt"

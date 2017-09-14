@@ -12,18 +12,20 @@ type entityUpdater interface {
 }
 
 type entityUpdateSystem struct {
-	order
-	us []entityUpdater
+	order int
+	us    []entityUpdater
 }
 
 func EntityUpdateSystem() *entityUpdateSystem {
-	return &entityUpdateSystem{
-		order: order{},
-	}
+	return &entityUpdateSystem{}
+}
+
+func (s *entityUpdateSystem) Order() int {
+	return s.order
 }
 
 func (s *entityUpdateSystem) SetOrder(n int) *entityUpdateSystem {
-	s.setOrder(n)
+	s.order = n
 	return s
 }
 

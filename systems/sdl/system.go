@@ -1,4 +1,4 @@
-package system
+package sdl
 
 import (
 	"sort"
@@ -29,12 +29,12 @@ type sdlRenderer2 interface {
 }
 
 type sdlRenderSystem struct {
-	order
-	W, H int
-	rs   sdlRenderers
-	rs2  []sdlRenderer2
-	w    *sdl.Window
-	r    *sdl.Renderer
+	order int
+	W, H  int
+	rs    sdlRenderers
+	rs2   []sdlRenderer2
+	w     *sdl.Window
+	r     *sdl.Renderer
 }
 
 func SdlRenderSystemOrPanic(w, h int) *sdlRenderSystem {
@@ -57,14 +57,17 @@ func SdlRenderSystem(w, h int) (*sdlRenderSystem, error) {
 	}
 
 	return &sdlRenderSystem{
-		w:     window,
-		r:     renderer,
-		order: order{100},
+		w: window,
+		r: renderer,
 	}, nil
 }
 
+func (s *sdlRenderSystem) Order() int {
+	return s.order
+}
+
 func (s *sdlRenderSystem) SetOrder(n int) *sdlRenderSystem {
-	s.setOrder(n)
+	s.order = n
 	return s
 }
 

@@ -12,18 +12,20 @@ type eventHandler interface {
 }
 
 type eventHandleSystem struct {
-	order
-	hs []eventHandler
+	order int
+	hs    []eventHandler
 }
 
 func EventHandleSystem() *eventHandleSystem {
-	return &eventHandleSystem{
-		order: order{},
-	}
+	return &eventHandleSystem{}
+}
+
+func (s *eventHandleSystem) Order() int {
+	return s.order
 }
 
 func (s *eventHandleSystem) SetOrder(n int) *eventHandleSystem {
-	s.order.setOrder(n)
+	s.order = n
 	return s
 }
 

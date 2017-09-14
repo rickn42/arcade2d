@@ -8,16 +8,17 @@ import (
 	"os"
 
 	. "github.com/rickn42/adventure2d"
-	"github.com/rickn42/adventure2d/entity"
-	"github.com/rickn42/adventure2d/system"
+	"github.com/rickn42/adventure2d/systems/default/entity"
+	"github.com/rickn42/adventure2d/systems/default/system"
+	"github.com/rickn42/adventure2d/systems/sdl"
 )
 
 type gravity struct {
 	*entity.ID
-	*entity.RenderRect
 	*entity.Position
 	*entity.Velocity
 	*entity.Mass
+	*sdl.RenderRect
 }
 
 type masser struct {
@@ -34,11 +35,11 @@ func main() {
 	scene.AddSystem(system.WatcherSystem(os.Stdout, time.Second))
 	scene.AddSystem(system.MoverSystem())
 	scene.AddSystem(system.GravitySystem())
-	scene.AddSystem(system.SdlRenderSystemOrPanic(800, 600))
+	scene.AddSystem(sdl.SdlRenderSystemOrPanic(800, 600))
 
 	scene.AddEntity(gravity{
 		ID:         entity.NewID(),
-		RenderRect: entity.NewRenderRect(Vector2{50, 50}, Vector2{}),
+		RenderRect: sdl.NewRenderRect(Vector2{50, 50}, Vector2{}),
 		Position:   entity.NewPosition(Vector2{300, 300}),
 		Velocity:   entity.NewVelocity(Vector2{Y: -900}),
 		Mass:       entity.NewMass(1),

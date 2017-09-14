@@ -9,7 +9,7 @@ import (
 )
 
 type watcher struct {
-	order
+	order   int
 	watchDt time.Duration
 	dt      time.Duration
 	w       io.Writer
@@ -22,8 +22,12 @@ func WatcherSystem(writer io.Writer, watchDt time.Duration) *watcher {
 	}
 }
 
+func (w *watcher) Order()  int{
+	return w.order
+}
+
 func (w *watcher) SetOrder(n int) *watcher {
-	w.setOrder(n)
+	w.order = n
 	return w
 }
 

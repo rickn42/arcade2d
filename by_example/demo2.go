@@ -7,8 +7,8 @@ import (
 	"time"
 
 	. "github.com/rickn42/adventure2d"
-	"github.com/rickn42/adventure2d/entity"
-	"github.com/rickn42/adventure2d/system"
+	"github.com/rickn42/adventure2d/systems/default/entity"
+	"github.com/rickn42/adventure2d/systems/default/system"
 )
 
 // update position by velocity

@@ -7,8 +7,9 @@ import (
 	"time"
 
 	. "github.com/rickn42/adventure2d"
-	"github.com/rickn42/adventure2d/entity"
-	"github.com/rickn42/adventure2d/system"
+	"github.com/rickn42/adventure2d/systems/default/entity"
+	"github.com/rickn42/adventure2d/systems/default/system"
+	"github.com/rickn42/adventure2d/systems/sdl"
 )
 
 func main() {
@@ -19,19 +20,20 @@ func main() {
 	scene := engine.NewScene()
 	scene.AddSystem(system.WatcherSystem(os.Stdout, time.Second))
 	scene.AddSystem(system.MoverSystem())
-	scene.AddSystem(system.SdlRenderSystemOrPanic(800, 600))
+	scene.AddSystem(sdl.SdlRenderSystemOrPanic(800, 600))
 
 	type movingRect struct {
 		*entity.ID
 		*entity.Position
 		*entity.Velocity
-		*entity.RenderRect
+		*sdl.RenderRect
 	}
+
 	scene.AddEntity(movingRect{
 		ID:         entity.NewID(),
 		Position:   entity.NewPosition(Vector2{100, 100}),
 		Velocity:   entity.NewVelocity(Vector2{X: 10, Y: 30}),
-		RenderRect: entity.NewRenderRect(Vector2{50, 50}, Vector2{25, 25}),
+		RenderRect: sdl.NewRenderRect(Vector2{50, 50}, Vector2{25, 25}),
 	})
 
 	scene.Play()

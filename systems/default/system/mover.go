@@ -13,18 +13,20 @@ type velociter interface {
 }
 
 type moverSystem struct {
-	order
+	order  int
 	movers []velociter
 }
 
 func MoverSystem() *moverSystem {
-	return &moverSystem{
-		order: order{},
-	}
+	return &moverSystem{}
+}
+
+func (s *moverSystem) Order() int {
+	return s.order
 }
 
 func (s *moverSystem) SetOrder(n int) *moverSystem {
-	s.setOrder(n)
+	s.order = n
 	return s
 }
 

@@ -31,18 +31,20 @@ type moved interface {
 }
 
 type collideSystem struct {
-	order
-	cs []collider
+	order int
+	cs    []collider
 }
 
 func CollideSystem() *collideSystem {
-	return &collideSystem{
-		order: order{},
-	}
+	return &collideSystem{}
+}
+
+func (s *collideSystem) Order() int {
+	return s.order
 }
 
 func (s *collideSystem) SetOrder(n int) *collideSystem {
-	s.setOrder(n)
+	s.order = n
 	return s
 }
 

@@ -28,13 +28,13 @@ func (e *Scene) SetID(id EntityID) {
 func (s *Scene) AddEntity(e Entity) error {
 	err := s.nilPropertyCheck(e)
 	if err != nil {
-		log.Error("ADD ENTITY FAILED\n", err)
+		log.Error("\nADD ENTITY FAILED", err)
 		return err
 	}
 
 	e.SetID(s.genID())
 	s.es = append(s.es, e)
-	log.Infof("ADD ENTITY\n%v\n", e)
+	log.Infof("\nADD ENTITY %v\n", e)
 
 	for _, system := range s.ss {
 		err := system.Add(e)
