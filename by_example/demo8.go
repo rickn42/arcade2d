@@ -21,7 +21,7 @@ func main() {
 	scene.AddSystem(system.CollideSystem())
 
 	type dummyBar struct {
-		Entity
+		*entity.ID
 		*entity.Position
 		*entity.RenderRect
 		*entity.Collider
@@ -30,7 +30,7 @@ func main() {
 	}
 
 	type dummyCollider struct {
-		Entity
+		*entity.ID
 		*entity.Position
 		*entity.Velocity
 		*entity.RenderRect
@@ -49,7 +49,7 @@ func main() {
 
 	// right bar
 	scene.AddEntity(dummyBar{
-		Entity:     NewEntity(),
+		ID:         entity.NewID(),
 		Position:   entity.NewPosition(Vector2{600, 50}),
 		RenderRect: entity.NewRenderRect(Vector2{50, 500}, Vector2{}),
 		Collider:   entity.NewCollide(Vector2{50, 500}, Vector2{}),
@@ -59,7 +59,7 @@ func main() {
 
 	// left bar
 	scene.AddEntity(dummyBar{
-		Entity:     NewEntity(),
+		ID:         entity.NewID(),
 		Position:   entity.NewPosition(Vector2{100, 50}),
 		RenderRect: entity.NewRenderRect(Vector2{50, 500}, Vector2{}),
 		Collider:   entity.NewCollide(Vector2{50, 500}, Vector2{}),
@@ -69,7 +69,7 @@ func main() {
 
 	// dummy between bars
 	scene.AddEntity(dummyCollider{
-		Entity:     NewEntity(),
+		ID:         entity.NewID(),
 		Position:   entity.NewPosition(Vector2{200, 300}),
 		Velocity:   entity.NewVelocity(Vector2{X: 300, Y: 50}),
 		RenderRect: entity.NewRenderRect(Vector2{50, 50}, Vector2{}),

@@ -3,7 +3,7 @@ package adventure2d
 import "sync"
 
 type Engine struct {
-	Entity
+	id            EntityID
 	FrameRate     int
 	Width, Height int
 	renderSystem  System
@@ -14,30 +14,34 @@ type Engine struct {
 
 func NewEngine() *Engine {
 	engine := &Engine{
-		Entity:       NewEntity(),
-		lastID:       1,
-		FrameRate:    30,
-		Width:        800,
-		Height:       600,
-		renderSystem: EmptyRenderSystem,
+		lastID:    1,
+		FrameRate: 30,
+		Width:     800,
+		Height:    600,
 	}
-	engine.setID(engine.genID())
+	engine.id = engine.genID()
 	return engine
-}
-
-func (eng *Engine) SetRenderSystem(r System) {
-	eng.renderSystem = r
 }
 
 func (eng *Engine) NewScene() *Scene {
 	scene := &Scene{
-		Entity:       NewEntity(),
-		frameRate:    eng.FrameRate,
-		renderSystem: eng.renderSystem,
-		genID:        eng.genID,
+		id:        eng.genID(),
+		frameRate: eng.FrameRate,
+		genID:     eng.genID,
 	}
-	scene.setID(eng.genID())
 	return scene
+}
+
+func (eng *Engine) ID() EntityID {
+	return eng.id
+}
+
+func (eng *Engine) SetID(id EntityID) {
+	eng.id = id
+}
+
+func (eng *Engine) SetRenderSystem(r System) {
+	eng.renderSystem = r
 }
 
 func (eng *Engine) genID() EntityID {
@@ -49,15 +53,3 @@ func (eng *Engine) genID() EntityID {
 
 	return id
 }
-
-var EmptyRenderSystem = new(emptyRenderSystem)
-
-type emptyRenderSystem struct{}
-
-func (emptyRenderSystem) Order() int { return 0 }
-
-func (emptyRenderSystem) Add(Entity) error { return nil }
-
-func (emptyRenderSystem) Remove(Entity) {}
-
-func (emptyRenderSystem) Update([]Entity, float64) {}

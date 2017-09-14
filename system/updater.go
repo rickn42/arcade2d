@@ -1,9 +1,14 @@
 package system
 
-import . "github.com/rickn42/adventure2d"
+import (
+	"time"
+
+	"github.com/murlokswarm/log"
+	. "github.com/rickn42/adventure2d"
+)
 
 type entityUpdater interface {
-	Update(e Entity, dt float64)
+	Update(e Entity, dt time.Duration)
 }
 
 type entityUpdateSystem struct {
@@ -13,7 +18,7 @@ type entityUpdateSystem struct {
 
 func EntityUpdateSystem() *entityUpdateSystem {
 	return &entityUpdateSystem{
-		order: order{2},
+		order: order{},
 	}
 }
 
@@ -25,6 +30,7 @@ func (s *entityUpdateSystem) SetOrder(n int) *entityUpdateSystem {
 func (s *entityUpdateSystem) Add(e Entity) error {
 	if u, ok := e.(entityUpdater); ok {
 		s.us = append(s.us, u)
+		log.Infof("Entity-Update-System: GetID(%d) added", e.GetID())
 	}
 	return nil
 }
@@ -34,13 +40,14 @@ func (s *entityUpdateSystem) Remove(e Entity) {
 		for i, u2 := range s.us {
 			if u == u2 {
 				s.us = append(s.us[i:], s.us[i+1:]...)
+				log.Infof("Entity-Update-System: GetID(%d) removed", e.GetID())
 				return
 			}
 		}
 	}
 }
 
-func (s *entityUpdateSystem) Update(_ []Entity, dt float64) {
+func (s *entityUpdateSystem) Update(_ []Entity, dt time.Duration) {
 	for _, u := range s.us {
 		u.Update(u.(Entity), dt)
 	}

@@ -2,6 +2,7 @@ package entity
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 	. "github.com/rickn42/adventure2d"
@@ -9,7 +10,7 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
-type RenderImageConfig struct {
+type RenderConfig struct {
 	SrcChop, DstChop       bool
 	SrcX, SrcY, SrcW, SrcH int
 	DstW, DstH             int
@@ -25,7 +26,7 @@ type RenderImage struct {
 	srcRect, dstRect *sdl.Rect
 }
 
-func NewRenderImage(cfg RenderImageConfig) *RenderImage {
+func NewRenderImage(cfg RenderConfig) *RenderImage {
 	r := &RenderImage{
 		path:    cfg.Path,
 		offsetX: cfg.OffsetX,
@@ -50,6 +51,10 @@ func NewRenderImage(cfg RenderImageConfig) *RenderImage {
 	return r
 }
 
+func (e *RenderImage) String() string {
+	return fmt.Sprintf("RenderImage")
+}
+
 func (e *RenderImage) SdlInit(r *sdl.Renderer) (err error) {
 
 	if e.path == "" {
@@ -72,7 +77,7 @@ func (e *RenderImage) SetRenderOrder(i int) {
 	e.renderOrder = i
 }
 
-func (e *RenderImage) SdlRender(r *sdl.Renderer, pos Vector2) error {
+func (e *RenderImage) SdlRender(r *sdl.Renderer, pos Vector2, _ time.Duration) error {
 
 	if e.dstRect != nil {
 		e.dstRect.X = int32(pos.X) - int32(e.offsetX)

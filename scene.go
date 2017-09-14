@@ -1,49 +1,85 @@
 package adventure2d
 
 import (
+	"errors"
+	"reflect"
 	"sort"
 	"time"
+
+	"github.com/murlokswarm/log"
 )
 
 type Scene struct {
-	Entity
-	frameRate    int
-	renderSystem System
-	systems
-	entities []Entity
-	genID    func() EntityID
+	id        EntityID
+	frameRate int
+	ss        systems
+	es        []Entity
+	genID     func() EntityID
 }
 
-func (s *Scene) AddEntity(e Entity) {
-	e.setID(s.genID())
-	s.entities = append(s.entities, e)
+func (e *Scene) ID() EntityID {
+	return e.id
+}
 
-	for _, system := range s.systems {
+func (e *Scene) SetID(id EntityID) {
+	e.id = id
+}
+
+func (s *Scene) AddEntity(e Entity) error {
+	err := s.nilPropertyCheck(e)
+	if err != nil {
+		log.Error("ADD ENTITY FAILED\n", err)
+		return err
+	}
+
+	e.SetID(s.genID())
+	s.es = append(s.es, e)
+	log.Infof("ADD ENTITY\n%v\n", e)
+
+	for _, system := range s.ss {
 		err := system.Add(e)
 		if err != nil {
 			EventManager.Send(err)
 		}
 	}
+
+	return nil
+}
+
+var EntityHasNilProperties = errors.New("Entity has <nil> properties")
+
+func (s *Scene) nilPropertyCheck(e Entity) error {
+	rv := reflect.ValueOf(e)
+	switch rv.Kind() {
+	case reflect.Ptr:
+		rv = rv.Elem()
+	}
+
+	for i := 0; i < rv.NumField(); i++ {
+		rf := rv.Field(i)
+		switch rf.Kind() {
+		case reflect.Interface, reflect.Ptr:
+			if rv.Field(i).IsNil() {
+				return EntityHasNilProperties
+			}
+		}
+	}
+	return nil
 }
 
 func (s *Scene) AddSystem(ss ...System) {
-	s.systems = append(s.systems, ss...)
-	sort.Sort(s.systems)
+	s.ss = append(s.ss, ss...)
+	sort.Sort(s.ss)
 }
 
 func (s *Scene) Play() {
+
 	dt := UnitDt / time.Duration(s.frameRate)
-	ratioDt := float64(dt) / float64(UnitDt)
 
 	for {
-		// update
-		for _, system := range s.systems {
-			system.Update(s.entities, ratioDt)
+		for _, system := range s.ss {
+			system.Update(s.es, dt)
 		}
-
-		// render
-		s.renderSystem.Update(s.entities, ratioDt)
-
 		time.Sleep(dt)
 	}
 }

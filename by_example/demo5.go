@@ -20,14 +20,13 @@ func main() {
 	scene := engine.NewScene()
 	scene.AddSystem(system.EventHandleSystem())
 
-	type eventHandleDummy struct {
-		Entity
-		*entity.Updater
+	type dummy struct {
+		*entity.ID
 		*entity.EventHandler
 	}
 
-	scene.AddEntity(eventHandleDummy{
-		Entity: NewEntity(),
+	scene.AddEntity(dummy{
+		ID: entity.NewID(),
 		EventHandler: entity.NewEventHandler(func(this Entity, events []Event) {
 			// receive event
 			fmt.Printf("receive:")

@@ -1,6 +1,8 @@
 package system
 
 import (
+	"time"
+
 	"github.com/murlokswarm/log"
 	. "github.com/rickn42/adventure2d"
 )
@@ -35,7 +37,7 @@ type collideSystem struct {
 
 func CollideSystem() *collideSystem {
 	return &collideSystem{
-		order: order{80},
+		order: order{},
 	}
 }
 
@@ -47,6 +49,7 @@ func (s *collideSystem) SetOrder(n int) *collideSystem {
 func (s *collideSystem) Add(e Entity) error {
 	if c, ok := e.(collider); ok {
 		s.cs = append(s.cs, c)
+		log.Infof("CollideSystem: GetID(%d) added", e.GetID())
 	}
 	return nil
 }
@@ -56,13 +59,14 @@ func (s *collideSystem) Remove(e Entity) {
 		for i, c2 := range s.cs {
 			if c == c2 {
 				s.cs = append(s.cs[:i], s.cs[i+1:]...)
+				log.Infof("CollideSystem: GetID(%d) removed", e.GetID())
 				return
 			}
 		}
 	}
 }
 
-func (s *collideSystem) Update(_ []Entity, dt float64) {
+func (s *collideSystem) Update([]Entity, time.Duration) {
 
 	for i, c1 := range s.cs {
 		for j := i + 1; j < len(s.cs); j++ {

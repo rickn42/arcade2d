@@ -30,6 +30,10 @@ func NewCollide(wh, offset Vector2) *Collider {
 	}
 }
 
+func (c *Collider) String() string {
+	return "Collider"
+}
+
 func (c *Collider) ColliderShape() interface{} {
 	return c.shape
 }

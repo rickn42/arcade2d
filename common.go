@@ -4,6 +4,10 @@ import "time"
 
 var UnitDt = time.Second
 
+func RatioToUnitDt(dt time.Duration) float64 {
+	return float64(dt) / float64(UnitDt)
+}
+
 type Vector2 struct {
 	X, Y float64
 }

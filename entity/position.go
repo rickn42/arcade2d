@@ -1,6 +1,10 @@
 package entity
 
-import . "github.com/rickn42/adventure2d"
+import (
+	"fmt"
+
+	. "github.com/rickn42/adventure2d"
+)
 
 type Position struct {
 	moved bool
@@ -12,6 +16,10 @@ func NewPosition(p Vector2) *Position {
 		moved: true,
 		pos:   p,
 	}
+}
+
+func (p *Position) String() string {
+	return fmt.Sprintf("Position %.0f %.0f", p.pos.X, p.pos.Y)
 }
 
 func (p *Position) GetPosition() Vector2 {

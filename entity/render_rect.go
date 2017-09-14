@@ -1,6 +1,9 @@
 package entity
 
 import (
+	"fmt"
+	"time"
+
 	. "github.com/rickn42/adventure2d"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -21,6 +24,11 @@ func NewRenderRect(wh, offset Vector2) *RenderRect {
 	}
 }
 
+func (rect *RenderRect) String() string {
+	return fmt.Sprintf("RenderRect wh %.f %.f, offset %.f %.f, color-rgba %d %d %d %d",
+		rect.wh.X, rect.wh.Y, rect.offset.X, rect.offset.Y, rect.r, rect.g, rect.b, rect.a)
+}
+
 func (rect *RenderRect) RenderOrder() int {
 	return 1
 }
@@ -32,7 +40,7 @@ func (rect *RenderRect) SetColor(r, g, b, a uint8) {
 	rect.a = a
 }
 
-func (rect *RenderRect) SdlRender(rd *sdl.Renderer, pos Vector2) error {
+func (rect *RenderRect) SdlRender(rd *sdl.Renderer, pos Vector2, _ time.Duration) error {
 	xy := pos.Add(rect.offset)
 
 	r, g, b, a, _ := rd.GetDrawColor()

@@ -1,6 +1,11 @@
 package system
 
-import . "github.com/rickn42/adventure2d"
+import (
+	"time"
+
+	"github.com/murlokswarm/log"
+	. "github.com/rickn42/adventure2d"
+)
 
 type eventHandler interface {
 	EventHandle(e Entity, events []Event)
@@ -13,7 +18,7 @@ type eventHandleSystem struct {
 
 func EventHandleSystem() *eventHandleSystem {
 	return &eventHandleSystem{
-		order: order{0},
+		order: order{},
 	}
 }
 
@@ -25,6 +30,7 @@ func (s *eventHandleSystem) SetOrder(n int) *eventHandleSystem {
 func (s *eventHandleSystem) Add(e Entity) error {
 	if h, ok := e.(eventHandler); ok {
 		s.hs = append(s.hs, h)
+		log.Infof("EventHandlerSystem: GetID(%d) added", e.GetID())
 	}
 	return nil
 }
@@ -34,13 +40,14 @@ func (s *eventHandleSystem) Remove(e Entity) {
 		for i, h2 := range s.hs {
 			if h == h2 {
 				s.hs = append(s.hs[i:], s.hs[i+1:]...)
+				log.Infof("EventHandlerSystem: GetID(%d) removed", e.GetID())
 				return
 			}
 		}
 	}
 }
 
-func (s *eventHandleSystem) Update(_ []Entity, dt float64) {
+func (s *eventHandleSystem) Update([]Entity, time.Duration) {
 	events := EventManager.Flush()
 	for _, h := range s.hs {
 		h.EventHandle(h.(Entity), events)

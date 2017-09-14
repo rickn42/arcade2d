@@ -4,6 +4,8 @@ import (
 	"sort"
 	"sync"
 
+	"time"
+
 	"github.com/murlokswarm/log"
 	"github.com/pkg/errors"
 	. "github.com/rickn42/adventure2d"
@@ -18,12 +20,12 @@ type sdlIniter interface {
 type sdlRenderer interface {
 	RenderOrder() int
 	GetPosition() Vector2
-	SdlRender(r *sdl.Renderer, pos Vector2) error
+	SdlRender(r *sdl.Renderer, pos Vector2, dt time.Duration) error
 }
 
 type sdlRenderer2 interface {
 	GetPosition() Vector2
-	SdlRender(r *sdl.Renderer, pos Vector2) error
+	SdlRender(r *sdl.Renderer, pos Vector2, dt time.Duration) error
 }
 
 type sdlRenderSystem struct {
@@ -78,12 +80,14 @@ func (w *sdlRenderSystem) Add(e Entity) error {
 
 	if r, ok := e.(sdlRenderer); ok {
 		w.rs = append(w.rs, r)
+		log.Infof("Sdl-RenderSystem: GetID(%d) RendererType1 added", e.GetID())
 		sort.Sort(w.rs)
 		return nil
 	}
 
 	if r, ok := e.(sdlRenderer2); ok {
 		w.rs2 = append(w.rs2, r)
+		log.Infof("Sdl-RenderSystem: GetID(%d) RendererType2 added", e.GetID())
 		return nil
 	}
 
@@ -95,6 +99,7 @@ func (w *sdlRenderSystem) Remove(e Entity) {
 		for i, r2 := range w.rs {
 			if r2 == r {
 				w.rs = append(w.rs[:i], w.rs[i+1:]...)
+				log.Infof("Sdl-RenderSystem: GetID(%d) RendererType1 removed", e.GetID())
 				return
 			}
 		}
@@ -104,24 +109,25 @@ func (w *sdlRenderSystem) Remove(e Entity) {
 		for i, r2 := range w.rs2 {
 			if r2 == r {
 				w.rs2 = append(w.rs2[:i], w.rs2[i+1:]...)
+				log.Infof("Sdl-RenderSystem: GetID(%d) RendererType2 removed", e.GetID())
 				return
 			}
 		}
 	}
 }
 
-func (w *sdlRenderSystem) Update([]Entity, float64) {
+func (w *sdlRenderSystem) Update(_ []Entity, dt time.Duration) {
 	w.r.Clear()
 
 	for _, r := range w.rs {
-		err := r.SdlRender(w.r, r.GetPosition())
+		err := r.SdlRender(w.r, r.GetPosition(), dt)
 		if err != nil {
 			// TODO rendering error
 		}
 	}
 
 	for _, r := range w.rs2 {
-		err := r.SdlRender(w.r, r.GetPosition())
+		err := r.SdlRender(w.r, r.GetPosition(), dt)
 		if err != nil {
 			// TODO rendering error
 		}

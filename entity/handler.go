@@ -10,6 +10,10 @@ func NewEventHandler(f func(this Entity, events []Event)) *EventHandler {
 	return &EventHandler{f}
 }
 
-func (h EventHandler) EventHandle(this Entity, events []Event) {
+func (h *EventHandler) String() string {
+	return "EventHandler"
+}
+
+func (h *EventHandler) EventHandle(this Entity, events []Event) {
 	h.f(this, events)
 }
