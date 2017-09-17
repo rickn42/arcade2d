@@ -13,16 +13,24 @@ type watcher struct {
 	watchDt time.Duration
 	dt      time.Duration
 	w       io.Writer
+	c       chan string
 }
 
 func WatcherSystem(writer io.Writer, watchDt time.Duration) *watcher {
+	c := make(chan string, 100)
+	go func() {
+		for s := range c {
+			writer.Write([]byte(s))
+		}
+	}()
 	return &watcher{
 		watchDt: watchDt,
 		w:       writer,
+		c:       c,
 	}
 }
 
-func (w *watcher) Order()  int{
+func (w *watcher) Order() int {
 	return w.order
 }
 
@@ -47,11 +55,11 @@ func (w *watcher) Update(es []Entity, dt time.Duration) {
 }
 
 func (w *watcher) Watch(es []Entity) {
-	fmt.Fprintf(w.w, "Watch entities count=%d\n", len(es))
+	w.c <- fmt.Sprintf("Watch entities count=%d\n", len(es))
 
 	for _, e := range es {
-		fmt.Fprintf(w.w, "%T %v\n", e, e)
+		w.c <- fmt.Sprintf("%T %v\n", e, e)
 	}
 
-	fmt.Fprintln(w.w)
+	w.c <- "\n"
 }

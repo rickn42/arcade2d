@@ -5,21 +5,22 @@ import (
 
 	"github.com/murlokswarm/log"
 	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 )
 
 type gravity interface {
-	GravityDirection(position Vector2) (direction Vector2)
+	GravityDirection(position Vec2) (direction Vec2)
 }
 
 type masser interface {
 	GetMass() float64
-	GetPosition() Vector2
-	AddVelocity(Vector2)
+	GetPosition() Vec2
+	AddVelocity(Vec2)
 }
 
 type gravitySystem struct {
 	order     int
-	direction Vector2
+	direction Vec2
 	gs        []gravity
 	ms        []masser
 }
@@ -83,7 +84,7 @@ func (s *gravitySystem) Update(es []Entity, dt time.Duration) {
 			}
 
 			d := g.GravityDirection(m.GetPosition())
-			m.AddVelocity(d.Mult(ratio))
+			m.AddVelocity(d.Mul(ratio))
 		}
 	}
 }

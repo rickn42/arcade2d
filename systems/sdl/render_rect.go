@@ -5,50 +5,61 @@ import (
 	"time"
 
 	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type RenderRect struct {
-	wh         Vector2
-	offset     Vector2
 	r, g, b, a uint8
+	order      int
+	shape      *BoxShape
 }
 
-func NewRenderRect(wh, offset Vector2) *RenderRect {
+func NewRenderRect(s *BoxShape) *RenderRect {
 	return &RenderRect{
-		wh:     wh,
-		offset: offset,
-		r:      255,
-		g:      255,
-		b:      255,
+		shape: s,
+		r:     255,
+		g:     255,
+		b:     255,
 	}
 }
 
 func (rect *RenderRect) String() string {
-	return fmt.Sprintf("RenderRect wh %.f %.f, offset %.f %.f, color-rgba %d %d %d %d",
-		rect.wh.X, rect.wh.Y, rect.offset.X, rect.offset.Y, rect.r, rect.g, rect.b, rect.a)
+	return fmt.Sprintf("RenderRect %s, color-rgba %d %d %d %d",
+		rect.shape, rect.r, rect.g, rect.b, rect.a)
 }
 
 func (rect *RenderRect) RenderOrder() int {
-	return 1
+	return rect.order
 }
 
-func (rect *RenderRect) SetColor(r, g, b, a uint8) {
+func (rect *RenderRect) SetRenderOrder(n int) {
+	rect.order = n
+}
+
+func (rect *RenderRect) SetColor(r, g, b, a uint8) *RenderRect {
 	rect.r = r
 	rect.g = g
 	rect.b = b
 	rect.a = a
+
+	return rect
 }
 
-func (rect *RenderRect) SdlRender(rd *sdl.Renderer, pos Vector2, _ time.Duration) error {
-	xy := pos.Add(rect.offset)
+func (rect *RenderRect) SdlRender(this Entity, rd *sdl.Renderer, pos Vec2, _ time.Duration) error {
 
-	r, g, b, a, _ := rd.GetDrawColor()
+	type angler interface {
+		GetRadian() float64
+	}
 
-	rd.SetDrawColor(rect.r, rect.g, rect.b, rect.a)
-	rd.DrawRect(&sdl.Rect{int32(xy.X), int32(xy.Y), int32(rect.wh.X), int32(rect.wh.Y)})
+	var angle float64
+	if a, ok := this.(angler); ok {
+		angle = a.GetRadian()
+	}
 
-	rd.SetDrawColor(r, g, b, a)
+	//fmt.Println(rect.r, rect.g, rect.b, rect.a)
+	DrawRect(rd, pos, rect.shape.Offset, rect.shape.Width, angle, rect.r, rect.g, rect.b, rect.a)
+	DrawDot(rd, pos, rect.r, rect.g, rect.b, rect.a)
 
 	return nil
 }

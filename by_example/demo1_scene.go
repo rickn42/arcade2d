@@ -1,11 +1,9 @@
 package main
 
 import (
-	"time"
-
 	"os"
-
 	"strconv"
+	"time"
 
 	. "github.com/rickn42/adventure2d"
 	"github.com/rickn42/adventure2d/systems/default/entity"

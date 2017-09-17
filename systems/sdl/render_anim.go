@@ -1,12 +1,12 @@
 package sdl
 
 import (
-	"time"
-
 	"strconv"
+	"time"
 
 	"github.com/pkg/errors"
 	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -52,10 +52,10 @@ func (e *RenderAnim) SdlInit(r *sdl.Renderer) (err error) {
 	return nil
 }
 
-func (e *RenderAnim) SdlRender(r *sdl.Renderer, pos Vector2, dt time.Duration) error {
+func (e *RenderAnim) SdlRender(this Entity, r *sdl.Renderer, pos Vec2, dt time.Duration) error {
 	e.updateIdx(dt)
 	e.texture = e.ts[e.idx]
-	e.RenderImage.SdlRender(r, pos, dt)
+	e.RenderImage.SdlRender(this, r, pos, dt)
 	return nil
 }
 

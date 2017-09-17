@@ -3,14 +3,14 @@ package entity
 import (
 	"fmt"
 
-	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 )
 
 type Gravity struct {
-	d Vector2
+	d Vec2
 }
 
-func NewDirectionGravity(direction Vector2) *Gravity {
+func NewDirectionGravity(direction Vec2) *Gravity {
 	return &Gravity{direction}
 }
 
@@ -18,6 +18,6 @@ func (g *Gravity) String() string {
 	return fmt.Sprintf("Gravity %.1f %.1f", g.d.X, g.d.Y)
 }
 
-func (g *Gravity) GravityDirection(Vector2) Vector2 {
+func (g *Gravity) GravityDirection(Vec2) Vec2 {
 	return g.d
 }

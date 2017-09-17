@@ -7,6 +7,7 @@ import (
 	"time"
 
 	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 	"github.com/rickn42/adventure2d/systems/default/entity"
 	"github.com/rickn42/adventure2d/systems/default/system"
 )
@@ -30,8 +31,8 @@ func main() {
 
 	scene.AddEntity(dummy{
 		ID:       entity.NewID(),
-		Position: entity.NewPosition(Vector2{}),
-		Velocity: entity.NewVelocity(Vector2{1, 1}),
+		Position: entity.NewPosition(Vec2{}),
+		Velocity: entity.NewVelocity(Vec2{1, 1}),
 	})
 
 	scene.Play()

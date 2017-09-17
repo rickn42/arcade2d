@@ -5,11 +5,16 @@ import (
 
 	"github.com/murlokswarm/log"
 	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 )
 
 type velociter interface {
-	GetVelocity() Vector2
-	AddPosition(Vector2)
+	GetVelocity() Vec2
+	SetVelocity(Vec2)
+	AddVelocity(Vec2)
+	GetPosition() Vec2
+	SetPosition(Vec2)
+	AddPosition(Vec2)
 }
 
 type moverSystem struct {
@@ -53,6 +58,6 @@ func (s *moverSystem) Remove(e Entity) {
 func (s *moverSystem) Update(es []Entity, dt time.Duration) {
 	ratio := RatioToUnitDt(dt)
 	for _, mv := range s.movers {
-		mv.AddPosition(mv.GetVelocity().Mult(ratio))
+		mv.AddPosition(mv.GetVelocity().Mul(ratio))
 	}
 }

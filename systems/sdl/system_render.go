@@ -2,13 +2,11 @@ package sdl
 
 import (
 	"sort"
-	"sync"
-
 	"time"
 
 	"github.com/murlokswarm/log"
-	"github.com/pkg/errors"
 	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
@@ -19,46 +17,44 @@ type sdlIniter interface {
 
 type sdlRenderer interface {
 	RenderOrder() int
-	GetPosition() Vector2
-	SdlRender(r *sdl.Renderer, pos Vector2, dt time.Duration) error
+	GetPosition() Vec2
+	SdlRender(e Entity, r *sdl.Renderer, pos Vec2, dt time.Duration) error
 }
 
 type sdlRenderer2 interface {
-	GetPosition() Vector2
-	SdlRender(r *sdl.Renderer, pos Vector2, dt time.Duration) error
+	GetPosition() Vec2
+	SdlRender(e Entity, r *sdl.Renderer, pos Vec2, dt time.Duration) error
 }
 
 type sdlRenderSystem struct {
-	order int
-	W, H  int
-	rs    sdlRenderers
-	rs2   []sdlRenderer2
-	w     *sdl.Window
-	r     *sdl.Renderer
+	order      int
+	W, H       int
+	rs         sdlRenderers
+	rs2        []sdlRenderer2
+	subsystems []SubSystem
 }
 
-func SdlRenderSystemOrPanic(w, h int) *sdlRenderSystem {
-	s, err := SdlRenderSystem(w, h)
+func NewSdlRenderSystemOrPanic(subsystems ...SubSystem) *sdlRenderSystem {
+	s, err := SdlRenderSystem(subsystems...)
 	if err != nil {
 		panic(err)
 	}
 	return s
 }
 
-func SdlRenderSystem(w, h int) (*sdlRenderSystem, error) {
-	err := initSdl()
+func SdlRenderSystem(subsystems ...SubSystem) (*sdlRenderSystem, error) {
+	err := initWindow()
 	if err != nil {
 		return nil, err
 	}
 
-	window, renderer, err := sdl.CreateWindowAndRenderer(w, h, sdl.WINDOW_SHOWN)
+	err = createRenderer()
 	if err != nil {
-		return nil, errors.Wrap(err, "Create window failed")
+		return nil, err
 	}
 
 	return &sdlRenderSystem{
-		w: window,
-		r: renderer,
+		subsystems: subsystems,
 	}, nil
 }
 
@@ -72,9 +68,8 @@ func (s *sdlRenderSystem) SetOrder(n int) *sdlRenderSystem {
 }
 
 func (w *sdlRenderSystem) Add(e Entity) error {
-
 	if it, ok := e.(sdlIniter); ok {
-		err := it.SdlInit(w.r)
+		err := it.SdlInit(sdlrenderer)
 		if err != nil {
 			log.Error(err)
 			return err
@@ -119,68 +114,32 @@ func (w *sdlRenderSystem) Remove(e Entity) {
 	}
 }
 
-func (w *sdlRenderSystem) Update(_ []Entity, dt time.Duration) {
-	w.r.Clear()
+func (w *sdlRenderSystem) Update(es []Entity, dt time.Duration) {
+	sdlrenderer.Clear()
 
 	for _, r := range w.rs {
-		err := r.SdlRender(w.r, r.GetPosition(), dt)
+		err := r.SdlRender(r.(Entity), sdlrenderer, r.GetPosition(), dt)
 		if err != nil {
 			// TODO rendering error
 		}
 	}
 
 	for _, r := range w.rs2 {
-		err := r.SdlRender(w.r, r.GetPosition(), dt)
+		err := r.SdlRender(r.(Entity), sdlrenderer, r.GetPosition(), dt)
 		if err != nil {
 			// TODO rendering error
 		}
 	}
 
-	w.r.Present()
+	for _, system := range w.subsystems {
+		system.Update(es, dt)
+	}
+
+	sdlrenderer.Present()
 }
 
 func (w *sdlRenderSystem) Destroy() {
-	w.w.Destroy()
+	destoryWindow()
 	ttf.Quit()
 	sdl.Quit()
-}
-
-// sort interface
-type sdlRenderers []sdlRenderer
-
-func (rs sdlRenderers) Len() int {
-	return len(rs)
-}
-
-func (rs sdlRenderers) Less(i, j int) bool {
-	return rs[i].RenderOrder() <= rs[j].RenderOrder()
-}
-
-func (rs sdlRenderers) Swap(i, j int) {
-	rs[i], rs[j] = rs[j], rs[i]
-}
-
-// init sdl
-var initOnce sync.Once
-var initRes chan error
-
-func initSdl() error {
-	initOnce.Do(func() {
-		initRes = make(chan error)
-
-		err := sdl.Init(sdl.INIT_EVERYTHING)
-		if err != nil {
-			initRes <- errors.Wrap(err, "SDL initialize failed")
-			return
-		}
-
-		err = ttf.Init()
-		if err != nil {
-			initRes <- errors.Wrap(err, "ttf init failed")
-			return
-		}
-
-		close(initRes)
-	})
-	return <-initRes
 }

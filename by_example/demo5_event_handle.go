@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-
 	"time"
 
 	. "github.com/rickn42/adventure2d"

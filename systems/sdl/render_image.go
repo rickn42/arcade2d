@@ -6,31 +6,34 @@ import (
 
 	"github.com/pkg/errors"
 	. "github.com/rickn42/adventure2d"
+	. "github.com/rickn42/adventure2d/matrix"
 	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
 type RenderConfig struct {
-	SrcChop, DstChop       bool
-	SrcX, SrcY, SrcW, SrcH int
-	DstW, DstH             int
-	OffsetX, OffsetY       int
-	Path                   string
+	SrcChop, DstChop, DrawBorder bool
+	SrcX, SrcY, SrcW, SrcH       int
+	DstShape                     *BoxShape
+	Path                         string
 }
 
 type RenderImage struct {
+	drawBorder       bool
 	renderOrder      int
-	offsetX, offsetY int
 	path             string
+	shape            *BoxShape
+	offsetSdl        *sdl.Point
 	texture          *sdl.Texture
 	srcRect, dstRect *sdl.Rect
 }
 
 func NewRenderImage(cfg RenderConfig) *RenderImage {
 	r := &RenderImage{
-		path:    cfg.Path,
-		offsetX: cfg.OffsetX,
-		offsetY: cfg.OffsetY,
+		path:       cfg.Path,
+		shape:      cfg.DstShape,
+		offsetSdl:  &sdl.Point{int32(cfg.DstShape.Offset.X), int32(cfg.DstShape.Offset.Y)},
+		drawBorder: cfg.DrawBorder,
 	}
 
 	if cfg.SrcChop {
@@ -44,8 +47,8 @@ func NewRenderImage(cfg RenderConfig) *RenderImage {
 
 	if cfg.DstChop {
 		r.dstRect = &sdl.Rect{
-			W: int32(cfg.DstW),
-			H: int32(cfg.DstH),
+			W: int32(cfg.DstShape.Width.X),
+			H: int32(cfg.DstShape.Width.Y),
 		}
 	}
 	return r
@@ -77,16 +80,37 @@ func (e *RenderImage) SetRenderOrder(i int) {
 	e.renderOrder = i
 }
 
-func (e *RenderImage) SdlRender(r *sdl.Renderer, pos Vector2, _ time.Duration) error {
+func (e *RenderImage) SdlRender(this Entity, r *sdl.Renderer, pos Vec2, _ time.Duration) error {
 
-	if e.dstRect != nil {
-		e.dstRect.X = int32(pos.X) - int32(e.offsetX)
-		e.dstRect.Y = int32(pos.Y) - int32(e.offsetY)
+	type angler interface {
+		GetDegree() float64
+		GetRadian() float64
 	}
 
-	if err := r.Copy(e.texture, e.srcRect, e.dstRect); err != nil {
+	if e.dstRect != nil {
+		e.dstRect.X = int32(pos.X) - int32(e.shape.Offset.X)
+		e.dstRect.Y = int32(pos.Y) - int32(e.shape.Offset.Y)
+	}
+	var err error
+	var degree, radian float64
+	if a, ok := this.(angler); ok {
+		degree = a.GetDegree()
+		radian = a.GetRadian()
+	}
+
+	if degree != 0 {
+		err = r.CopyEx(e.texture, e.srcRect, e.dstRect,
+			degree, e.offsetSdl, sdl.FLIP_NONE)
+	} else {
+		err = r.Copy(e.texture, e.srcRect, e.dstRect)
+	}
+	if err != nil {
 		return fmt.Errorf("copy bird failed: %v", err)
 	}
 
+	if e.drawBorder {
+		DrawRect(r, pos, e.shape.Offset, e.shape.Width, radian, 255, 0, 0, 0)
+		DrawDot(r, pos, 255, 0, 0, 0)
+	}
 	return nil
 }
