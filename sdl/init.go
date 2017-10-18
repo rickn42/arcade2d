@@ -11,6 +11,7 @@ import (
 var title = "adventure2d"
 var widthSize = 640
 var heightSize = 480
+var backgroundColor = []uint8{255, 255, 255, 255}
 
 func SetWindowTitle(s string) {
 	title = s
@@ -18,6 +19,10 @@ func SetWindowTitle(s string) {
 
 func SetWindowSize(w, h int) {
 	widthSize, heightSize = w, h
+}
+
+func SetBackgroundColor(r, g, b, a uint8) {
+	backgroundColor = []uint8{r, g, b, a}
 }
 
 // init sdl

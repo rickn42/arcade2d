@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/rickn42/arcade2d"
@@ -13,7 +12,7 @@ import (
 func main() {
 
 	engine := arcade2d.NewEngine()
-	engine.FrameRate = 60
+	engine.FrameRate = 30
 
 	scene := engine.NewScene()
 	scene.AddSystem(system.LinearVelocitySystem())
@@ -58,7 +57,7 @@ func main() {
 		*entity.Collider
 		*entity.Angler
 		*entity.Updater
-		*sdl.RenderImage
+		*sdl.RenderAnim
 	}
 
 	birdShape := &arcade2d.BoxShape{
@@ -72,10 +71,18 @@ func main() {
 		LinearVelocity: entity.NewLinearVelocity(arcade2d.Vec2{X: 100}),
 		Collider:       entity.NewCollide(birdShape).SetDrawCollider(true),
 		Angler:         entity.NewAngler(0),
-		RenderImage: sdl.NewRenderImage(sdl.RenderConfig{
-			DstChop:  true,
-			DstShape: birdShape,
-			Path:     "res/imgs/bird-1.png",
+		RenderAnim: sdl.NewRenderAnim(sdl.RenderConfig{
+			DrawBorder: true,
+			DstChop:    true,
+			DstShape: &arcade2d.BoxShape{
+				Width:  arcade2d.Vec2{100, 86},
+				Offset: arcade2d.Vec2{50, 43},
+			},
+		}, []sdl.RenderAnimImage{
+			{"res/imgs/bird-1.png", 100 * time.Millisecond},
+			{"res/imgs/bird-2.png", 100 * time.Millisecond},
+			{"res/imgs/bird-3.png", 100 * time.Millisecond},
+			{"res/imgs/bird-4.png", 100 * time.Millisecond},
 		}),
 		Updater: entity.NewUpdater(func(this arcade2d.Entity, dt time.Duration) {
 			bird := this.(Bird)
@@ -90,12 +97,10 @@ func main() {
 	}
 
 	bird.OnCollideEnter(func(this, other arcade2d.Entity) {
-		fmt.Println("collide enter")
 		bird.SetDrawColliderColor(255, 0, 0, 0)
 	})
 
 	bird.OnCollideExit(func(this, other arcade2d.Entity) {
-		fmt.Println("collide exit")
 		bird.SetDrawColliderColor(0, 0, 255, 0)
 	})
 

@@ -112,6 +112,7 @@ func (w *sdlRenderSystem) Remove(e Entity) {
 }
 
 func (w *sdlRenderSystem) Update(es []Entity, dt time.Duration) {
+
 	sdlrenderer.Clear()
 
 	for _, r := range w.rs {
@@ -132,6 +133,7 @@ func (w *sdlRenderSystem) Update(es []Entity, dt time.Duration) {
 		system.Update(es, dt)
 	}
 
+	sdlrenderer.SetDrawColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])
 	sdlrenderer.Present()
 }
 
