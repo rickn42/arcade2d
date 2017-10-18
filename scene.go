@@ -1,4 +1,4 @@
-package adventure2d
+package arcade2d
 
 import (
 	"errors"
@@ -68,7 +68,12 @@ func (s *Scene) nilPropertyCheck(e Entity) error {
 }
 
 func (s *Scene) AddSystem(ss ...System) {
-	s.ss = append(s.ss, ss...)
+	for _, system := range ss {
+		s.ss = append(s.ss, system)
+		for _, e := range s.es {
+			system.Add(e)
+		}
+	}
 	sort.Sort(s.ss)
 }
 

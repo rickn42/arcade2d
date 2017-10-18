@@ -1,4 +1,4 @@
-package adventure2d
+package arcade2d
 
 import "unsafe"
 
@@ -28,7 +28,7 @@ type KeyDownEvent struct {
 	Button    uint8
 	State     uint8
 	Repeat    uint8
-	Keysym    int32
+	Keysym    string
 }
 
 type KeyUpEvent struct {
@@ -36,7 +36,7 @@ type KeyUpEvent struct {
 	Button    uint8
 	State     uint8
 	Repeat    uint8
-	Keysym    int32
+	Keysym    string
 }
 
 type MouseButtonEvent struct {
@@ -48,6 +48,7 @@ type MouseButtonEvent struct {
 }
 
 type TouchFingerEvent struct {
+	Type      uint32
 	Timestamp uint32
 	Button    uint8
 	State     uint8

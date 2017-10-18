@@ -1,10 +1,8 @@
-package adventure2d
+package arcade2d
 
 import (
 	"fmt"
 	"time"
-
-	. "github.com/rickn42/adventure2d/matrix"
 )
 
 var UnitDt = time.Second
@@ -23,7 +21,7 @@ func (b *BoxShape) String() string {
 		b.Width.X, b.Width.Y, b.Offset.X, b.Offset.Y)
 }
 
-func (b *BoxShape) BorderPoints(pos Vec2, rotM Mat22) (ps [4]Vec2) {
+func (b *BoxShape) BorderPoints(pos Vec2, rotM *Mat22) (ps [4]Vec2) {
 
 	// apply offset
 	ps[0] = b.Offset.Mul(-1)

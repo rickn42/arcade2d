@@ -1,4 +1,4 @@
-package adventure2d
+package arcade2d
 
 type EntityID int64
 
